@@ -1,0 +1,138 @@
+# Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# WSO2 Inc. licenses this file to you under the Apache License,
+# Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+[package]
+org = "ballerinax"
+name = "zipkin"
+version = "@toml.version@"
+distribution = "2201.7.0"
+
+[platform.java17]
+graalvmCompatible = true
+
+[[platform.java17.dependency]]
+path = "../native/build/libs/zipkin-extension-native-@project.version@.jar"
+groupId = "ballerina"
+artifactId = "zipkin-extension-native"
+version = "@project.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-exporter-zipkin-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-exporter-zipkin"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/zipkin-@zipkin.version@.jar"
+groupId = "io.zipkin.zipkin2"
+artifactId = "zipkin"
+version = "@zipkin.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/zipkin-reporter-@zipkinReporter.version@.jar"
+groupId = "io.zipkin.reporter2"
+artifactId = "zipkin-reporter"
+version = "@zipkinReporter.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/zipkin-sender-okhttp3-@zipkinReporter.version@.jar"
+groupId = "io.zipkin.reporter2"
+artifactId = "zipkin-sender-okhttp3"
+version = "@zipkinReporter.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/okio-jvm-@okio.version@.jar"
+groupId = "com.squareup.okio"
+artifactId = "okio"
+version = "@okio.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/okhttp-@okhttp.version@.jar"
+groupId = "com.squareup.okhttp3"
+artifactId = "okhttp"
+version = "@okhttp.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/kotlin-runtime-@kotlin.version@.jar"
+groupId = "org.jetbrains.kotlin"
+artifactId = "kotlin-runtime"
+version = "@kotlin.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/kotlin-stdlib-@kotlinStdlib.version@.jar"
+groupId = "org.jetbrains.kotlin"
+artifactId = "kotlin-stdlib"
+version = "@kotlinStdlib.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-api-metrics-@openTelemetryAlpha.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-api-metrics"
+version = "@openTelemetryAlpha.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-sdk-trace-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-sdk-trace"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-sdk-common-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-sdk-common"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-semconv-@openTelemetryAlpha.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-semconv"
+version = "@openTelemetryAlpha.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-proto-@openTelemetryAlpha.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-proto"
+version = "@openTelemetryAlpha.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-exporter-otlp-trace-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-exporter-otlp-trace"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-exporter-otlp-common-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-exporter-otlp-common"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/opentelemetry-extension-trace-propagators-@opentelemetry.version@.jar"
+groupId = "io.opentelemetry"
+artifactId = "opentelemetry-extension-trace-propagators"
+version = "@opentelemetry.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/guava-@guava.version@.jar"
+groupId = "com.google.guava"
+artifactId = "guava"
+version = "@guava.version@"
+
+[[platform.java17.dependency]]
+path = "./lib/failureaccess-@failureAccess.version@.jar"
+groupId = "com.google.guava"
+artifactId = "failureaccess"
+version = "@failureAccess.version@"
