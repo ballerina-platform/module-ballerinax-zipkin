@@ -155,8 +155,8 @@ task build {
 }
 
 task codeCoverageReport(type: JacocoReport) {
-    dependsOn('ballerina:extractBallerinaClassFiles')
-    dependsOn('native:copyJavaClassFiles')
+    dependsOn('zipkin-extension-ballerina:extractBallerinaClassFiles')
+    dependsOn('zipkin-extension-native:copyJavaClassFiles')
 
     executionData fileTree(project.rootDir.absolutePath).include("**/*.exec")
     additionalClassDirs files("${buildDir}/classes")

@@ -43,7 +43,7 @@ jobs:
           version: 2201.8.0
 
       - name: Update dependency versions
-        run: ./gradlew :ballerina:updateTomlVerions
+        run: ./gradlew :zipkin-extension-ballerina:updateTomlVerions
         env:
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
