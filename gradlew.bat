@@ -1,8 +1,9 @@
 @rem
-@rem Copyright 2015 the original author or authors.
+@rem Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com) All Rights Reserved.
 @rem
-@rem Licensed under the Apache License, Version 2.0 (the "License");
-@rem you may not use this file except in compliance with the License.
+@rem WSO2 LLC. licenses this file to you under the Apache License,
+@rem Version 2.0 (the "License"); you may not use this file except
+@rem in compliance with the License.
 @rem You may obtain a copy of the License at
 @rem
 @rem      https://www.apache.org/licenses/LICENSE-2.0
