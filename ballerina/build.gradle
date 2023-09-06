@@ -70,63 +70,21 @@ jar {
     }
 }
 
-task unpackJballerinaTools(type: Copy, dependsOn: configurations.jbalTools) {
-    configurations.jbalTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-        from zipTree(artifact.getFile())
-        into new File("${buildDir}/extracted-distributions", "jballerina-tools-zip")
-    }
-}
-
-task unpackStdLibs(dependsOn: configurations.ballerinaStdLibs) {
-    doLast {
-        configurations.ballerinaStdLibs.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            copy {
-                from project.zipTree(artifact.getFile())
-                into new File("${buildDir}/extracted-distributions", artifact.name + "-zip")
-            }
-        }
-    }
-}
-
-task copyExternalJarsToLib(type: Copy) {
-    into "${project.projectDir}/lib"
-    from configurations.externalJars
-}
-
-task copyStdlibs(type: Copy) {
-    dependsOn unpackJballerinaTools
-    dependsOn unpackStdLibs
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    into "${project.buildDir}/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}"
-
-    /* Standard Libraries */
-    configurations.ballerinaStdLibs.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-        def artifactExtractedPath = "${buildDir}/extracted-distributions/" + artifact.name + "-zip"
-        into("repo/bala") {
-            from "${artifactExtractedPath}/bala"
-        }
-        into("repo/cache") {
-            from "${artifactExtractedPath}/cache"
-        }
-    }
-}
-
 def packageOrg = "ballerinax"
 def packageName = "zipkin"
 def ballerinaConfigFile = new File("${project.projectDir}/Ballerina.toml")
-def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
 def artifactBallerinaDocs = file("${project.projectDir}/build/docs_parent/")
 def artifactCacheParent = file("${project.buildDir}/cache_parent/")
 def artifactLibParent = file("${project.buildDir}/lib_parent/")
 def snapshotVersion = "-SNAPSHOT"
+def distributionPackName = "${project.distributionVersion}"
+def distributionVersion = stripBallerinaDistributionVersion("${project.distributionVersion}")
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def originalConfig = ballerinaConfigFile.text
-def originalDependencyConfig = ballerinaDependencyFile.text
 def artifactJar = file("$project.projectDir/target/cache/${packageOrg}/${packageName}/${tomlVersion}/java17/")
 def platform = "java17"
-def distributionBinPath = "${project.buildDir.absolutePath}/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
+def distributionBinPath = "${buildDir}/ballerina-${distributionVersion}-swan-lake/distributions/ballerina-${distributionVersion}/bin"
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -142,9 +100,40 @@ def stripBallerinaExtensionVersion(String extVersion) {
     }
 }
 
+def stripBallerinaDistributionVersion(String distributionPackName) {
+    def splitVersion = distributionPackName.split('-');
+    if (splitVersion.length > 1) {
+        def distVersion = splitVersion[0]
+        return distVersion
+    } else {
+        return distributionPackName as java.lang.Object
+    }
+
+}
+
+task downloadBallerinaDistributionZip(type: Download) {
+    src "https://github.com/ballerina-platform/ballerina-distribution/releases/download/v${distributionPackName}" +
+            "/ballerina-${distributionVersion}-swan-lake.zip"
+    dest new File(buildDir, "ballerina-${distributionVersion}-swan-lake.zip")
+}
+
+task unzipBallerinaDistributionZip(type: Copy) {
+    dependsOn downloadBallerinaDistributionZip
+    dependsOn jar
+
+    def zipFile = file("${buildDir}/ballerina-${distributionVersion}-swan-lake.zip")
+    def outputDir = file("${buildDir}")
+
+    from zipTree(zipFile)
+    into outputDir
+
+    doLast {
+        delete zipFile
+    }
+}
+
 task updateTomlVerions {
     doLast {
-        def stdlibDependentIoVersion = stripBallerinaExtensionVersion(project.stdlibIoVersion)
         def zipkinVersion = project.zipkinVersion
         def zipkinReporterVersion = project.zipkinReporterVersion
         def okioVersion = project.okioVersion
@@ -169,22 +158,18 @@ task updateTomlVerions {
         newConfig = newConfig.replace("@guava.version@", guavaVersion)
         newConfig = newConfig.replace("@failureAccess.version@", failureAccessVersion)
         ballerinaConfigFile.text = newConfig
-
-        def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.io.version@", stdlibDependentIoVersion)
-        ballerinaDependencyFile.text = newDependencyConfig
     }
 }
 
 task revertTomlFile {
     doLast {
         ballerinaConfigFile.text = originalConfig
-        ballerinaDependencyFile.text = originalDependencyConfig
     }
 }
 
 task ballerinaBuild {
-    dependsOn copyExternalJarsToLib
-    dependsOn copyStdlibs
+    dependsOn downloadBallerinaDistributionZip
+    dependsOn unzipBallerinaDistributionZip
     dependsOn updateTomlVerions
     dependsOn configurations.nativeJar
     dependsOn configurations.externalJars
@@ -193,6 +178,9 @@ task ballerinaBuild {
     dependsOn jar
     dependsOn checkstyleMain
     dependsOn checkstyleTest
+    dependsOn spotbugsMain
+    dependsOn spotbugsTest
+    dependsOn test
 
     inputs.dir file(project.projectDir)
     finalizedBy(revertTomlFile)
