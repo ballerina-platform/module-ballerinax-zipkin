@@ -15,9 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.tools.ant.taskdefs.condition.Os
-
 description = 'Ballerina - Zipkin Extension - Ballerina Module'
 
 configurations {
@@ -77,14 +74,11 @@ def artifactBallerinaDocs = file("${project.projectDir}/build/docs_parent/")
 def artifactCacheParent = file("${project.buildDir}/cache_parent/")
 def artifactLibParent = file("${project.buildDir}/lib_parent/")
 def snapshotVersion = "-SNAPSHOT"
-def distributionPackName = "${project.distributionVersion}"
-def distributionVersion = stripBallerinaDistributionVersion("${project.distributionVersion}")
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def originalConfig = ballerinaConfigFile.text
 def artifactJar = file("$project.projectDir/target/cache/${packageOrg}/${packageName}/${tomlVersion}/java17/")
 def platform = "java17"
-def distributionBinPath = "${buildDir}/ballerina-${distributionVersion}-swan-lake/distributions/ballerina-${distributionVersion}/bin"
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -97,38 +91,6 @@ def stripBallerinaExtensionVersion(String extVersion) {
         }
     } else {
         return extVersion.replace("${project.ext.snapshotVersion}", "")
-    }
-}
-
-def stripBallerinaDistributionVersion(String distributionPackName) {
-    def splitVersion = distributionPackName.split('-');
-    if (splitVersion.length > 1) {
-        def distVersion = splitVersion[0]
-        return distVersion
-    } else {
-        return distributionPackName as java.lang.Object
-    }
-
-}
-
-task downloadBallerinaDistributionZip(type: Download) {
-    src "https://github.com/ballerina-platform/ballerina-distribution/releases/download/v${distributionPackName}" +
-            "/ballerina-${distributionVersion}-swan-lake.zip"
-    dest new File(buildDir, "ballerina-${distributionVersion}-swan-lake.zip")
-}
-
-task unzipBallerinaDistributionZip(type: Copy) {
-    dependsOn downloadBallerinaDistributionZip
-    dependsOn jar
-
-    def zipFile = file("${buildDir}/ballerina-${distributionVersion}-swan-lake.zip")
-    def outputDir = file("${buildDir}")
-
-    from zipTree(zipFile)
-    into outputDir
-
-    doLast {
-        delete zipFile
     }
 }
 
@@ -168,8 +130,6 @@ task revertTomlFile {
 }
 
 task ballerinaBuild {
-    dependsOn downloadBallerinaDistributionZip
-    dependsOn unzipBallerinaDistributionZip
     dependsOn updateTomlVerions
     dependsOn configurations.nativeJar
     dependsOn configurations.externalJars
@@ -191,15 +151,10 @@ task ballerinaBuild {
             additionalBuildParams = "--debug ${project.findProperty("debug")}"
         }
 
-        exec {
-            workingDir project.projectDir
-            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "${distributionBinPath}/bal.bat pack --offline ${additionalBuildParams} && exit %%ERRORLEVEL%%"
-            } else {
-                commandLine 'sh', '-c', "${distributionBinPath}/bal pack --offline ${additionalBuildParams}"
-            }
-        }
+        // build bala file
+        executeBalCommand ("build", "${project.projectDir}")
+        executeBalCommand ("pack", "${project.projectDir}")
+
         // extract bala file to artifact cache directory
         file("${project.projectDir}/target/bala").eachFileMatch(~/.*.bala/) { balaFile ->
             copy {
@@ -215,15 +170,8 @@ task ballerinaBuild {
         }
 
         // Doc creation and packing
-        exec {
-            workingDir project.projectDir
-            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$distributionBinPath/bal.bat doc && exit %%ERRORLEVEL%%"
-            } else {
-                commandLine 'sh', '-c', "$distributionBinPath/bal doc"
-            }
-        }
+        executeBalCommand ("doc", "${project.projectDir}")
+
         copy {
             from file("$project.projectDir/target/apidocs/${packageName}")
             into file("$project.buildDir/docs_parent/docs/${packageName}")
@@ -260,11 +208,7 @@ task ballerinaPublish {
             exec {
                 workingDir project.projectDir
                 environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine 'cmd', '/c', "$distributionBinPath/bal.bat push && exit %%ERRORLEVEL%%"
-                } else {
-                    commandLine 'sh', '-c', "$distributionBinPath/bal push"
-                }
+                executeBalCommand ("push", "${project.projectDir}")
             }
         } else {
             throw new InvalidUserDataException("Central Access Token is not present")
