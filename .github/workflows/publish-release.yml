@@ -36,6 +36,19 @@ jobs:
         run: chmod +x gradlew
       - name: Set Docker Host env variable
         run: echo "DOCKER_HOST=$(docker context ls --format '{{print .DockerEndpoint}}' | tr -d '\n')" >> $GITHUB_ENV
+      - name: Build with Gradle
+        env:
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build -x check -x test
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'rootfs'
+          scan-ref: '/github/workspace/ballerina/lib'
+          format: 'table'
+          timeout: '10m0s'
+          exit-code: '1'
       - name: Publish artifact
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
