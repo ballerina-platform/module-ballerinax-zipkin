@@ -31,6 +31,8 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +44,8 @@ import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SE
  */
 public class ZipkinTracerProvider implements TracerProvider {
     private static final String TRACER_NAME = "zipkin";
+    private static final String APPLICATION_LAYER_PROTOCOL = "http";
+    private static final Logger LOG = LoggerFactory.getLogger(ZipkinTracerProvider.class);
     private static final PrintStream console = System.out;
 
     static SdkTracerProviderBuilder tracerProviderBuilder;
@@ -59,7 +63,8 @@ public class ZipkinTracerProvider implements TracerProvider {
                                                 BDecimal samplerParam, int reporterFlushInterval,
                                                 int reporterBufferSize) {
 
-        String reporterEndpoint = "http://" + agentHostname + ":" + agentPort + "/api/v2/spans";
+        String reporterEndpoint = APPLICATION_LAYER_PROTOCOL + "://" +
+                agentHostname + ":" + agentPort + "/api/v2/spans";
 
         ZipkinSpanExporter exporter = ZipkinSpanExporter.builder().setEndpoint(reporterEndpoint).build();
 
@@ -72,7 +77,7 @@ public class ZipkinTracerProvider implements TracerProvider {
 
         tracerProviderBuilder.setSampler(selectSampler(samplerType, samplerParam));
 
-        console.println("ballerina: started publishing traces to Zipkin on " + reporterEndpoint);
+        LOG.info("ballerina: started publishing traces to Zipkin on " + reporterEndpoint);
     }
 
     private static Sampler selectSampler(BString samplerType, BDecimal samplerParam) {
