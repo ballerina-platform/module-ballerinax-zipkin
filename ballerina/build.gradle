@@ -67,6 +67,11 @@ jar {
     }
 }
 
+task copyExternalJarsToLib(type: Copy) {
+    into "${project.projectDir}/lib"
+    from configurations.externalJars
+}
+
 def packageOrg = "ballerinax"
 def packageName = "zipkin"
 def ballerinaConfigFile = new File("${project.projectDir}/Ballerina.toml")
@@ -133,6 +138,7 @@ task ballerinaBuild {
     dependsOn updateTomlVerions
     dependsOn configurations.nativeJar
     dependsOn configurations.externalJars
+    dependsOn copyExternalJarsToLib
     dependsOn compileJava
     dependsOn compileTestJava
     dependsOn jar
