@@ -15,6 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
 description = 'Ballerina - Zipkin Extension - Ballerina Module'
 
 configurations {
@@ -84,6 +87,7 @@ def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN'
 def originalConfig = ballerinaConfigFile.text
 def artifactJar = file("$project.projectDir/target/cache/${packageOrg}/${packageName}/${tomlVersion}/java17/")
 def platform = "java17"
+def skipTests = false
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -99,7 +103,7 @@ def stripBallerinaExtensionVersion(String extVersion) {
     }
 }
 
-task updateTomlVerions {
+task updateTomlVersions {
     doLast {
         def zipkinVersion = project.zipkinVersion
         def zipkinReporterVersion = project.zipkinReporterVersion
@@ -135,7 +139,7 @@ task revertTomlFile {
 }
 
 task ballerinaBuild {
-    dependsOn updateTomlVerions
+    dependsOn updateTomlVersions
     dependsOn configurations.nativeJar
     dependsOn configurations.externalJars
     dependsOn copyExternalJarsToLib
@@ -149,7 +153,9 @@ task ballerinaBuild {
     dependsOn test
 
     inputs.dir file(project.projectDir)
-    finalizedBy(revertTomlFile)
+    if (skipTests) {
+        finalizedBy(revertTomlFile)
+    }
 
     doLast {
         def additionalBuildParams = ""
@@ -199,9 +205,8 @@ artifacts {
 }
 
 task ballerinaPublish {
-    dependsOn updateTomlVerions
+    dependsOn updateTomlVersions
     dependsOn ballerinaBuild
-    dependsOn ":${packageName}-extension-tests:test"
 
     finalizedBy(revertTomlFile)
 
@@ -256,5 +261,25 @@ task extractBallerinaClassFiles(type: Copy) {
             include '**/*.class'
         }
         into "${project.rootDir.absolutePath}/build/classes"
+    }
+}
+
+task publishBalaFileToLocal {
+    dependsOn ballerinaBuild
+
+    finalizedBy(revertTomlFile)
+
+    doLast {
+        if (!skipTests) {
+            exec {
+                workingDir "${project.rootDir}/ballerina"
+                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                    commandLine 'cmd', '/c', "bal.bat push --repository=local" +
+                            " && exit %%ERRORLEVEL%%"
+                } else {
+                    commandLine 'sh', '-c', "bal push --repository=local"
+                }
+            }
+        }
     }
 }

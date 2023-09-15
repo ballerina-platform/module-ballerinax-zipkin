@@ -25,10 +25,12 @@ rootProject.name = 'module-ballerinax-zipkin'
 include(':build-config:checkstyle')
 include(':zipkin-extension-ballerina')
 include(':zipkin-extension-native')
+include(':zipkin-extension-ballerina-tests')
 
 project(':build-config:checkstyle').projectDir = file('build-config/checkstyle')
 project(':zipkin-extension-ballerina').projectDir = file('ballerina')
 project(':zipkin-extension-native').projectDir = file('native')
+project(':zipkin-extension-ballerina-tests').projectDir = file('ballerina-tests')
 
 gradleEnterprise {
     buildScan {

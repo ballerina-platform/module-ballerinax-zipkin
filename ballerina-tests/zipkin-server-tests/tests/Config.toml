@@ -1,0 +1,7 @@
+[ballerina.observe]
+tracingEnabled=true
+tracingProvider="zipkin"
+
+[ballerinax.zipkin]
+agentHostname="localhost"  # Optional Configuration. Default value is localhost
+agentPort=9411             # Optional Configuration. Default value is 9411

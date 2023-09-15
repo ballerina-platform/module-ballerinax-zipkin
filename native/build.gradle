@@ -23,7 +23,6 @@ plugins {
 description = 'Ballerina - Zipkin Extension - Native Module'
 
 dependencies {
-    implementation "org.slf4j:slf4j-jdk14:${slf4jVersion}"
     implementation "io.zipkin.zipkin2:zipkin:${zipkinVersion}"
     implementation "io.zipkin.reporter2:zipkin-reporter:${zipkinReporterVersion}"
     implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:${zipkinReporterVersion}"

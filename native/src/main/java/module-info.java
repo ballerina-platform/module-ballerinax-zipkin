@@ -25,7 +25,6 @@ module io.ballerina.observe.trace.extension.zipkin {
     requires io.opentelemetry.sdk.common;
     requires io.opentelemetry.extension.trace.propagation;
     requires io.opentelemetry.semconv;
-    requires slf4j.api;
 
     provides io.ballerina.runtime.observability.tracer.spi.TracerProvider
             with io.ballerina.observe.trace.zipkin.ZipkinTracerProvider;
