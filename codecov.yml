@@ -1,0 +1,5 @@
+fixes:
+  - "ballerinax/zipkin/*/::zipkin-extension-ballerina/"
+  
+ignore:
+  - "**/test"

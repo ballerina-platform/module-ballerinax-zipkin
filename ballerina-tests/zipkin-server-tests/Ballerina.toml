@@ -1,0 +1,14 @@
+[package]
+org = "ballerinax"
+name = "zipkin_server_tests"
+version = "0.1.0"
+distribution = "2201.8.0-20230830-220400-8a7556d8"
+
+[build-options]
+observabilityIncluded = true
+
+[[dependency]]
+org="ballerinax"
+name="zipkin"
+repository="local"
+version = "@toml.version@"
