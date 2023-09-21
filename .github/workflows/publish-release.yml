@@ -67,8 +67,6 @@ jobs:
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
           packagePublishRepo: ${{ github.repository }}
-          BALLERINA_DEV_CENTRAL: true
-          BALLERINA_STAGE_CENTRAL: false
         run: |
           git stash
           ./gradlew release -Prelease.useAutomaticVersion=true
