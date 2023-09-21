@@ -216,13 +216,8 @@ task ballerinaPublish {
         }
         if (ballerinaCentralAccessToken != null) {
             println("Publishing to the ballerina central...")
-//            exec {
-//                workingDir project.projectDir
-//                environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-//
-//            }
-//            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            executeBalCommand ("push", "${project.projectDir}")
+            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            executeBalCommand ("push", "${project.projectDir}", env)
         } else {
             throw new InvalidUserDataException("Central Access Token is not present")
         }
