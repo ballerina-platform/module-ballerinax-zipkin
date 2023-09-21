@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+env:
+  BALLERINA_DISTRIBUTION_VERSION: 2201.8.0-rc1   # Update this with the latest Ballerina version
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,6 +21,16 @@ jobs:
         with:
           distribution: adopt
           java-version: 17.0.7
+      - name: Ballerina Version
+        id: ballerina-version
+        run: |
+          BALLERINA_VERSION=$(cut -d '-' -f1 <<< "${{ env.BALLERINA_DISTRIBUTION_VERSION }}")
+          echo "::set-output name=version::$BALLERINA_VERSION"
+      - name: Install Ballerina
+        run: |
+          wget https://github.com/ballerina-platform/ballerina-distribution/releases/download/v${{ env.BALLERINA_DISTRIBUTION_VERSION }}/ballerina-${{ steps.ballerina-version.outputs.version }}-swan-lake-linux-x64.deb
+          sudo dpkg -i ballerina-*-linux-x64.deb
+          bal -v
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Set Docker Host env variable

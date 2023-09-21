@@ -12,6 +12,9 @@ on:
           - DEV CENTRAL
           - STAGE CENTRAL
 
+env:
+  BALLERINA_DISTRIBUTION_VERSION: 2201.8.0-rc1   # Update this with the latest Ballerina version
+
 jobs:
   publish-release:
     runs-on: ubuntu-latest
@@ -23,6 +26,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17.0.7
+      - name: Ballerina Version
+        id: ballerina-version
+        run: |
+          BALLERINA_VERSION=$(cut -d '-' -f1 <<< "${{ env.BALLERINA_DISTRIBUTION_VERSION }}")
+          echo "::set-output name=version::$BALLERINA_VERSION"
+      - name: Install Ballerina
+        run: |
+          wget https://github.com/ballerina-platform/ballerina-distribution/releases/download/v${{ env.BALLERINA_DISTRIBUTION_VERSION }}/ballerina-${{ steps.ballerina-version.outputs.version }}-swan-lake-linux-x64.deb
+          sudo dpkg -i ballerina-*-linux-x64.deb
+          bal -v
       - name: Build with Gradle
         env:
           packageUser: ${{ github.actor }}
