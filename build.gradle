@@ -109,10 +109,11 @@ subprojects {
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")
 
-def executeBalCommand(String command, String dir) {
+def executeBalCommand(String command, String dir, env = "") {
     try {
         exec {
             workingDir dir
+            environment environment: env
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "bal.bat ${command} && exit %%ERRORLEVEL%%"
             } else {
