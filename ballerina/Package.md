@@ -30,6 +30,7 @@ tracingEnabled=true
 tracingProvider="zipkin"
 
 [ballerinax.zipkin]
+reporterEndpoint="<TRACE_API>"  # Optional Configuration. This will override the values of agentHostname & agentPort.
 agentHostname="127.0.0.1"  # Optional Configuration. Default value is localhost
 agentPort=9411             # Optional Configuration. Default value is 9411
 ```

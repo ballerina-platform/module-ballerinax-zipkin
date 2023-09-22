@@ -33,6 +33,7 @@ import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 
 import java.io.PrintStream;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static io.opentelemetry.semconv.resource.attributes.ResourceAttributes.SERVICE_NAME;
@@ -56,12 +57,17 @@ public class ZipkinTracerProvider implements TracerProvider {
     public void init() {    // Do Nothing
     }
 
-    public static void initializeConfigurations(BString agentHostname, int agentPort, BString samplerType,
-                                                BDecimal samplerParam, int reporterFlushInterval,
+    public static void initializeConfigurations(BString reporterEndpointUrl, BString agentHostname, int agentPort,
+                                                BString samplerType, BDecimal samplerParam, int reporterFlushInterval,
                                                 int reporterBufferSize) {
 
-        String reporterEndpoint = APPLICATION_LAYER_PROTOCOL + "://" +
-                agentHostname + ":" + agentPort + "/api/v2/spans";
+        String reporterEndpoint;
+        if (!Objects.equals(String.valueOf(reporterEndpointUrl), "")) {
+            reporterEndpoint = String.valueOf(reporterEndpointUrl);
+        } else {
+            reporterEndpoint = APPLICATION_LAYER_PROTOCOL + "://" +
+                    agentHostname + ":" + agentPort + "/api/v2/spans";
+        }
 
         ZipkinSpanExporter exporter = ZipkinSpanExporter.builder().setEndpoint(reporterEndpoint).build();
 
@@ -74,7 +80,7 @@ public class ZipkinTracerProvider implements TracerProvider {
 
         tracerProviderBuilder.setSampler(selectSampler(samplerType, samplerParam));
 
-        console.println("ballerina: started publishing traces to Zipkin on " + reporterEndpoint);
+        console.println("ballerina: started publishing traces to Zipkin on " + reporterEndpoint.split("\\?")[0]);
     }
 
     private static Sampler selectSampler(BString samplerType, BDecimal samplerParam) {

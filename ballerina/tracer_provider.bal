@@ -21,6 +21,7 @@ import ballerina/observe;
 const PROVIDER_NAME = "zipkin";
 const DEFAULT_SAMPLER_TYPE = "const";
 
+configurable string reporterEndpoint = "";
 configurable string agentHostname = "localhost";
 configurable int agentPort = 9411;
 configurable string samplerType = "const";
@@ -39,12 +40,12 @@ function init() {
             selectedSamplerType = samplerType;
         }
 
-        externInitializeConfigurations(agentHostname, agentPort, selectedSamplerType, samplerParam,
+        externInitializeConfigurations(reporterEndpoint, agentHostname, agentPort, selectedSamplerType, samplerParam,
             reporterFlushInterval, reporterBufferSize);
     }
 }
 
-function externInitializeConfigurations(string agentHostname, int agentPort, string samplerType,
+function externInitializeConfigurations(string reporterEndpoint, string agentHostname, int agentPort, string samplerType,
         decimal samplerParam, int reporterFlushInterval, int reporterBufferSize) = @java:Method {
     'class: "io.ballerina.observe.trace.zipkin.ZipkinTracerProvider",
     name: "initializeConfigurations"
