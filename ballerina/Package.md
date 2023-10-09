@@ -34,3 +34,12 @@ reporterEndpoint="<TRACE_API>"  # Optional Configuration. This will override the
 agentHostname="127.0.0.1"  # Optional Configuration. Default value is localhost
 agentPort=9411             # Optional Configuration. Default value is 9411
 ```
+
+*Note*
+- If the `reporterEndpoint` is provided, the `agentHostname` and `agentPort` will be ignored.
+- If you want to pass a token for the reporter endpoint, configure the token as the environment variable `TRACE_API_TOKEN` and 
+  pass it to the `reporterEndpoint` as follows.
+```toml
+[ballerinax.zipkin]
+reporterEndpoint="<TRACE_API>?<TRACE_API_TOKEN_KEY>=$TRACE_API_TOKEN"
+```

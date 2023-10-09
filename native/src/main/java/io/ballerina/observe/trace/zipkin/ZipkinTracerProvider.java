@@ -64,6 +64,10 @@ public class ZipkinTracerProvider implements TracerProvider {
         String reporterEndpoint;
         if (!Objects.equals(String.valueOf(reporterEndpointUrl), "")) {
             reporterEndpoint = String.valueOf(reporterEndpointUrl);
+            if (reporterEndpoint.contains("$TRACE_API_TOKEN")) {
+                String token = System.getenv("TRACE_API_TOKEN");
+                reporterEndpoint = reporterEndpoint.replaceAll("\\$TRACE_API_TOKEN", token);
+            }
         } else {
             reporterEndpoint = APPLICATION_LAYER_PROTOCOL + "://" +
                     agentHostname + ":" + agentPort + "/api/v2/spans";
