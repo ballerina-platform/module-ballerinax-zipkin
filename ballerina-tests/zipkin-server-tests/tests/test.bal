@@ -378,7 +378,7 @@ function testHttpCachingClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.function.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.function.name"], "get");
     test:assertTrue(containsTag("src.module", httpCachingClientSpanTagKeys));
-    test:assertEquals(httpCachingClientSpanTags["src.module"], "ballerina/http:2.10.0");
+    test:assertEquals(httpCachingClientSpanTags["src.module"], "ballerina/http:2.10.1");
     test:assertTrue(containsTag("src.object.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.object.name"], "ballerina/http/HttpCachingClient");
     test:assertTrue(containsTag("src.position", httpCachingClientSpanTagKeys));
