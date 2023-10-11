@@ -207,6 +207,7 @@ artifacts {
 task ballerinaPublish {
     dependsOn updateTomlVersions
     dependsOn ballerinaBuild
+    dependsOn ":zipkin-extension-ballerina:generatePomFileForMavenJavaPublication"
 
     finalizedBy(revertTomlFile)
 
