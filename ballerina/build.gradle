@@ -151,6 +151,7 @@ task ballerinaBuild {
     dependsOn spotbugsMain
     dependsOn spotbugsTest
     dependsOn test
+    dependsOn ":zipkin-extension-ballerina:generatePomFileForMavenJavaPublication"
 
     inputs.dir file(project.projectDir)
     if (skipTests) {
