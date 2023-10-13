@@ -378,7 +378,7 @@ function testHttpCachingClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.function.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.function.name"], "get");
     test:assertTrue(containsTag("src.module", httpCachingClientSpanTagKeys));
-    test:assertEquals(httpCachingClientSpanTags["src.module"], "ballerina/http:2.10.2");
+    test:assertEquals(httpCachingClientSpanTags["src.module"], "ballerina/http:2.10.3");
     test:assertTrue(containsTag("src.object.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.object.name"], "ballerina/http/HttpCachingClient");
     test:assertTrue(containsTag("src.position", httpCachingClientSpanTagKeys));
@@ -411,7 +411,7 @@ function testHttpClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.function.name", httpClientSpanTagKeys));
     test:assertEquals(httpClientSpanTags["src.function.name"], "get");
     test:assertTrue(containsTag("src.module", httpClientSpanTagKeys));
-    test:assertEquals(httpClientSpanTags["src.module"], "ballerina/http:2.10.2");
+    test:assertEquals(httpClientSpanTags["src.module"], "ballerina/http:2.10.3");
     test:assertTrue(containsTag("src.object.name", httpClientSpanTagKeys));
     test:assertEquals(httpClientSpanTags["src.object.name"], "ballerina/http/HttpClient");
     test:assertTrue(containsTag("src.position", httpClientSpanTagKeys));

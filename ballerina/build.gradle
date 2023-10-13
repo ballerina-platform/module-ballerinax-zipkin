@@ -213,7 +213,7 @@ task ballerinaPublish {
     finalizedBy(revertTomlFile)
 
     doLast {
-        if (project.version.endsWith('-SNAPSHOT')) {
+        if (project.version.toString().split("-").length > 1) {
             return
         }
         if (ballerinaCentralAccessToken != null) {
