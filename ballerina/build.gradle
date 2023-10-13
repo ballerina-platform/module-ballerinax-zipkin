@@ -159,6 +159,10 @@ task ballerinaBuild {
     }
 
     doLast {
+        if (project.version.toString().split("-").length > 1) {
+            throw new InvalidUserDataException("Snapshot version is not allowed to publish")
+        }
+
         def additionalBuildParams = ""
         if (project.hasProperty("debug")) {
             additionalBuildParams = "--debug ${project.findProperty("debug")}"
@@ -213,7 +217,7 @@ task ballerinaPublish {
     finalizedBy(revertTomlFile)
 
     doLast {
-        if (project.version.endsWith('-SNAPSHOT')) {
+        if (project.version.toString().split("-").length > 1) {
             return
         }
         if (ballerinaCentralAccessToken != null) {
