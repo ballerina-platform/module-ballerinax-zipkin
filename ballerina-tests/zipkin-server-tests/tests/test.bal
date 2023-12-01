@@ -41,6 +41,7 @@ type SpanNames string[];
 http:Client zipkinClient = check new (string `http://localhost:9411`);
 http:Client cl = check new (string `http://localhost:9091`);
 http:Response res = new();
+string httpModuleVersion = check getHTTPModuleVersion();
 
 Span getSumSpan = {
     traceId: "",
@@ -378,7 +379,7 @@ function testHttpCachingClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.function.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.function.name"], "get");
     test:assertTrue(containsTag("src.module", httpCachingClientSpanTagKeys));
-    test:assertEquals(httpCachingClientSpanTags["src.module"], "ballerina/http:2.10.3");
+    test:assertEquals(httpCachingClientSpanTags["src.module"], string `ballerina/http:${httpModuleVersion}`);
     test:assertTrue(containsTag("src.object.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.object.name"], "ballerina/http/HttpCachingClient");
     test:assertTrue(containsTag("src.position", httpCachingClientSpanTagKeys));
@@ -411,7 +412,7 @@ function testHttpClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.function.name", httpClientSpanTagKeys));
     test:assertEquals(httpClientSpanTags["src.function.name"], "get");
     test:assertTrue(containsTag("src.module", httpClientSpanTagKeys));
-    test:assertEquals(httpClientSpanTags["src.module"], "ballerina/http:2.10.3");
+    test:assertEquals(httpClientSpanTags["src.module"], string `ballerina/http:${httpModuleVersion}`);
     test:assertTrue(containsTag("src.object.name", httpClientSpanTagKeys));
     test:assertEquals(httpClientSpanTags["src.object.name"], "ballerina/http/HttpClient");
     test:assertTrue(containsTag("src.position", httpClientSpanTagKeys));
