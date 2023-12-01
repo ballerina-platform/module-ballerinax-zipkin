@@ -16,7 +16,7 @@
 
 import ballerina/toml;
 
-const string DEPENDENCIES_TOML_FILE = "../../ballerina/Dependencies.toml";
+const string DEPENDENCIES_TOML_FILE = "Dependencies.toml";
 
 type DependenciesTomlData record {|
     ProjectDetails ballerina;
@@ -27,6 +27,7 @@ type Package record {|
     string org;
     string name;
     string version;
+    string scope?;
     Dependency[] dependencies?;
     Module[] modules?;
 |};
