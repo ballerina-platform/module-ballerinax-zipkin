@@ -1,6 +1,6 @@
 import ballerina/toml;
 
-const string DEPENDENCIES_TOML_FILE = "./../../../ballerina/Dependencies.toml";
+const string DEPENDENCIES_TOML_FILE = "../../ballerina/Dependencies.toml";
 
 type DependenciesTomlData record {|
     ProjectDetails ballerina;
