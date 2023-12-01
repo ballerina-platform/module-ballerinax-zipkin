@@ -195,18 +195,9 @@ task ballerinaTest {
 
     doLast {
         testPackages.each { testPackage ->
-            exec {
-                workingDir "${project.projectDir}/${testPackage}"
-                environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine 'cmd', '/c', "${balJavaDebugParam} bal.bat test ${nativeFlag}" +
-                            " ${testParams} ${groupParams} ${disableGroups} ${windowsDisableGroups} ${debugParams}" +
-                            " && exit %%ERRORLEVEL%%"
-                } else {
-                    commandLine 'sh', '-c', "bal test ${nativeFlag} ${testParams}" +
-                            " ${groupParams} ${disableGroups} ${debugParams}"
-                }
-            }
+            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true ${testParams} ${groupParams}" +
+                    " ${disableGroups} ${windowsDisableGroups} ${debugParams}"
+            executeBalCommand("test", "${project.projectDir}/${testPackage}", env)
         }
     }
 }
