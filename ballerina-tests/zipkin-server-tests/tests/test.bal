@@ -358,7 +358,7 @@ function testClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.object.name", clientSpanTagKeys));
     test:assertEquals(clientSpanTags["src.object.name"], "ballerina/http/Client");
     test:assertTrue(containsTag("src.position", clientSpanTagKeys));
-    test:assertEquals(clientSpanTags["src.position"], "tests/test.bal:124:17");
+    test:assertEquals(clientSpanTags["src.position"], "tests/test.bal:125:17");
 }
 
 @test:Config
