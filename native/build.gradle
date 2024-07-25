@@ -31,7 +31,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-runtime:${kotlinVersion}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
     implementation "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryVersion}"
-
     implementation "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
     implementation "io.opentelemetry:opentelemetry-api:${openTelemetryVersion}"
     implementation "io.opentelemetry:opentelemetry-context:${openTelemetryVersion}"
