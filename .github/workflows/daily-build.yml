@@ -41,6 +41,10 @@ jobs:
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./gradlew clean build
+      - name: Upload Codecov Report
+        uses: codecov/codecov-action@v4
+        with:
+          files: ballerina-tests/zipkin-server-tests/target/report/zipkin_server_tests/coverage-report.xml
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
