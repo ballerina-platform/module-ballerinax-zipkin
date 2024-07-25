@@ -78,10 +78,10 @@ artifactId = "kotlin-stdlib"
 version = "@kotlinStdlib.version@"
 
 [[platform.java17.dependency]]
-path = "./lib/opentelemetry-api-metrics-@openTelemetryAlpha.version@.jar"
+path = "./lib/opentelemetry-exporter-common-@opentelemetry.version@.jar"
 groupId = "io.opentelemetry"
-artifactId = "opentelemetry-api-metrics"
-version = "@openTelemetryAlpha.version@"
+artifactId = "opentelemetry-exporter-common"
+version = "@opentelemetry.version@"
 
 [[platform.java17.dependency]]
 path = "./lib/opentelemetry-sdk-trace-@opentelemetry.version@.jar"
@@ -96,21 +96,21 @@ artifactId = "opentelemetry-sdk-common"
 version = "@opentelemetry.version@"
 
 [[platform.java17.dependency]]
-path = "./lib/opentelemetry-semconv-@openTelemetryAlpha.version@.jar"
+path = "./lib/opentelemetry-semconv-@opentelemetrySemconv.version@.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-semconv"
-version = "@openTelemetryAlpha.version@"
+version = "@opentelemetrySemconv.version@"
 
 [[platform.java17.dependency]]
-path = "./lib/opentelemetry-proto-@openTelemetryAlpha.version@.jar"
+path = "./lib/opentelemetry-proto-@opentelemetryProto.version@.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-proto"
-version = "@openTelemetryAlpha.version@"
+version = "@opentelemetryProto.version@"
 
 [[platform.java17.dependency]]
-path = "./lib/opentelemetry-exporter-otlp-trace-@opentelemetry.version@.jar"
+path = "./lib/opentelemetry-exporter-otlp-@opentelemetry.version@.jar"
 groupId = "io.opentelemetry"
-artifactId = "opentelemetry-exporter-otlp-trace"
+artifactId = "opentelemetry-exporter-otlp"
 version = "@opentelemetry.version@"
 
 [[platform.java17.dependency]]
