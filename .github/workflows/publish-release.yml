@@ -3,10 +3,10 @@ name: Publish Release
 on:
   workflow_dispatch:
     inputs:
-      distribution_version:
-        description: 'Ballerina distribution version (e.g.; 2201.8.0)'
+      ballerina_version:
+        description: 'Ballerina version (e.g.; 2201.9.0)'
         required: true
-        default: '2201.8.0'
+        default: '2201.9.0'
 
 jobs:
   publish-release:
@@ -26,7 +26,7 @@ jobs:
           version: ${{ github.event.inputs.ballerina_version }}
       - name: Set version env variable
         run: echo "VERSION=$((grep -w 'version' | cut -d= -f2) < gradle.properties | rev | cut --complement -d- -f1 | rev)" >> $GITHUB_ENV
-      - name: Pre release depenency version update
+      - name: Pre release dependency version update
         env:
           GITHUB_TOKEN: ${{ secrets.BALLERINA_BOT_TOKEN }}
         run: |
