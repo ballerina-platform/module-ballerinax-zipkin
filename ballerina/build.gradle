@@ -44,14 +44,13 @@ dependencies {
     externalJars "org.jetbrains.kotlin:kotlin-runtime:${kotlinVersion}"
     externalJars "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
     externalJars "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-api:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-api-metrics:${openTelemetryAlphaVersion}"
+    externalJars "io.opentelemetry:opentelemetry-exporter-common:${openTelemetryVersion}"
     externalJars "io.opentelemetry:opentelemetry-context:${openTelemetryVersion}"
     externalJars "io.opentelemetry:opentelemetry-sdk-trace:${openTelemetryVersion}"
     externalJars "io.opentelemetry:opentelemetry-sdk-common:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-semconv:${openTelemetryAlphaVersion}"
-    externalJars "io.opentelemetry:opentelemetry-proto:${openTelemetryAlphaVersion}"
-    externalJars "io.opentelemetry:opentelemetry-exporter-otlp-trace:${openTelemetryVersion}"
+    externalJars "io.opentelemetry:opentelemetry-semconv:${openTelemetrySemconvVersion}"
+    externalJars "io.opentelemetry:opentelemetry-proto:${openTelemetryProtoVersion}"
+    externalJars "io.opentelemetry:opentelemetry-exporter-otlp:${openTelemetryVersion}"
     externalJars "io.opentelemetry:opentelemetry-exporter-otlp-common:${openTelemetryVersion}"
     externalJars "io.opentelemetry:opentelemetry-extension-trace-propagators:${openTelemetryVersion}"
     externalJars "com.google.guava:guava:${guavaVersion}"
@@ -112,7 +111,8 @@ task updateTomlVersions {
         def kotlinVersion = project.kotlinVersion
         def kotlinStdlibVersion = project.kotlinStdlibVersion
         def openTelemetryVersion = project.openTelemetryVersion
-        def openTelemetryAlphaVersion = project.openTelemetryAlphaVersion
+        def openTelemetryProtoVersion = project.openTelemetryProtoVersion
+        def openTelemetrySemconvVersion = project.openTelemetrySemconvVersion
         def guavaVersion = project.guavaVersion
         def failureAccessVersion = project.failureAccessVersion
 
@@ -125,7 +125,8 @@ task updateTomlVersions {
         newConfig = newConfig.replace("@kotlinStdlib.version@", kotlinStdlibVersion)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         newConfig = newConfig.replace("@opentelemetry.version@", openTelemetryVersion)
-        newConfig = newConfig.replace("@openTelemetryAlpha.version@", openTelemetryAlphaVersion)
+        newConfig = newConfig.replace("@opentelemetryProto.version@", openTelemetryProtoVersion)
+        newConfig = newConfig.replace("@opentelemetrySemconv.version@", openTelemetrySemconvVersion)
         newConfig = newConfig.replace("@guava.version@", guavaVersion)
         newConfig = newConfig.replace("@failureAccess.version@", failureAccessVersion)
         ballerinaConfigFile.text = newConfig
