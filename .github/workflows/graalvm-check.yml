@@ -8,10 +8,10 @@ on:
       ballerina_version:
         description: 'Ballerina version'
         required: true
-        default: '2201.8.3'
+        default: '2201.9.2'
 
 env:
-  BALLERINA_DISTRIBUTION_VERSION: 2201.8.3   # Update this with the latest Ballerina version
+  BALLERINA_DISTRIBUTION_VERSION: 2201.9.2   # Update this with the latest Ballerina version
 
 jobs:
   build:
@@ -33,12 +33,12 @@ jobs:
           native-image --version
       - name: Set up Ballerina
         if: github.event_name == 'workflow_dispatch'
-        uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/setup-ballerina@v1.1.3
         with:
           version: ${{ github.event.inputs.ballerina_version }}
       - name: Set up Ballerina
         if: github.event_name == 'schedule'
-        uses: ballerina-platform/setup-ballerina@v1.1.0
+        uses: ballerina-platform/setup-ballerina@v1.1.3
         with:
           version: ${{ env.BALLERINA_DISTRIBUTION_VERSION }}
       - name: Grant execute permission for gradlew
