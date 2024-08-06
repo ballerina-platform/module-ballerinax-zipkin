@@ -137,7 +137,7 @@ task startZipkinServer() {
             if (!stdOut.toString().contains("zipkin-server")) {
                 println "Starting Zipkin server."
                 exec {
-                    commandLine 'sh', '-c', "docker-compose -f $project.projectDir/resources/zipkin-server/docker-compose.yml up -d"
+                    commandLine 'sh', '-c', "docker compose -f $project.projectDir/resources/zipkin-server/docker-compose.yml up -d"
                     standardOutput = stdOut
                 }
                 println stdOut.toString()
