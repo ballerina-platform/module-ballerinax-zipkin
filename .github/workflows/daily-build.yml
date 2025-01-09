@@ -8,10 +8,10 @@ on:
       ballerina_version:
         description: 'Ballerina version'
         required: true
-        default: '2201.10.0'
+        default: '2201.10.3'
 
 env:
-  BALLERINA_DISTRIBUTION_VERSION: 2201.10.0    # Update this with the latest Ballerina version
+  BALLERINA_DISTRIBUTION_VERSION: 2201.10.3    # Update this with the latest Ballerina version
 
 jobs:
   build:
@@ -49,7 +49,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'rootfs'
-          scan-ref: '/github/workspace/ballerina/lib'
+          scan-ref: "${{ github.workspace }}/ballerina/lib"
           format: 'table'
           timeout: '10m0s'
           exit-code: '1'
