@@ -62,6 +62,8 @@ jobs:
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
           packagePublishRepo: ${{ github.repository }}
         run: |
+          rm -rf .cache
+          rm -rf trivy
           git stash
           ./gradlew release -Prelease.useAutomaticVersion=true
           ./gradlew -Pversion=${VERSION} publish -x test
