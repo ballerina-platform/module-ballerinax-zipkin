@@ -60,8 +60,6 @@ def testPackages = ["zipkin-server-tests"]
 
 def zipkinServerTestConfigFile = new File("${project.projectDir}/zipkin-server-tests/Ballerina.toml")
 def zipkinServerTestOriginalConfig = zipkinServerTestConfigFile.text
-def zipkinServerTestDependenciesFile = new File("${project.projectDir}/zipkin-server-tests/Dependencies.toml")
-def zipkinServerTestOriginalDependencies = zipkinServerTestDependenciesFile.text
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -117,8 +115,6 @@ task updateTomlVerions {
     doLast {
         def newConfig = zipkinServerTestConfigFile.text.replace("@toml.version@", tomlVersion)
         zipkinServerTestConfigFile.text = newConfig
-        def newDependencies = zipkinServerTestDependenciesFile.text.replace("@toml.version@", tomlVersion)
-        zipkinServerTestDependenciesFile.text = newDependencies
     }
 }
 
@@ -179,7 +175,6 @@ task stopZipkinServer() {
 task revertTomlFile {
     doLast {
         zipkinServerTestConfigFile.text = zipkinServerTestOriginalConfig
-        zipkinServerTestDependenciesFile.text = zipkinServerTestOriginalDependencies
     }
 }
 
