@@ -1,8 +1,13 @@
-## Package Overview
+## Overview
 
-The Zipkin Observability Extension is one of the tracing extensions of the<a target="_blank" href="https://ballerina.io/"> Ballerina</a> language.
+The Zipkin Observability Extension provides an implementation for tracing and publishing traces to a [Zipkin](https://zipkin.io/) Agent.
 
-It provides an implementation for tracing and publishing traces to a Zipkin Agent.
+### Key Features
+
+- Publish distributed traces to a Zipkin Agent
+- Configurable agent hostname, port, and reporter endpoint
+- Support for token-based authentication on the reporter endpoint
+- Simple configuration via import and Config.toml
 
 ## Enabling Zipkin Extension
 
