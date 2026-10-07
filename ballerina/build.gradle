@@ -17,8 +17,16 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import javax.inject.Inject
 
 description = 'Ballerina - Zipkin Extension - Ballerina Module'
+
+abstract class ExecHelper {
+    @Inject
+    abstract ExecOperations getExecOperations()
+}
+
+def execHelper = project.objects.newInstance(ExecHelper)
 
 configurations {
     nativeJar {
@@ -271,7 +279,7 @@ task publishBalaFileToLocal {
 
     doLast {
         if (!skipTests) {
-            exec {
+            execHelper.execOperations.exec {
                 workingDir "${project.rootDir}/ballerina"
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                     commandLine 'cmd', '/c', "bal.bat push --repository=local" +

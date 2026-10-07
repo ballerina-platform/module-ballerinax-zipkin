@@ -17,8 +17,16 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import javax.inject.Inject
 
 description = 'Ballerina - Zipkin Extension - Ballerina Tests'
+
+abstract class ExecHelper {
+    @Inject
+    abstract ExecOperations getExecOperations()
+}
+
+def execHelper = project.objects.newInstance(ExecHelper)
 
 configurations {
     nativeJar {
@@ -126,13 +134,13 @@ task startZipkinServer() {
         // for Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=zipkin-server"
                 standardOutput = stdOut
             }
             if (!stdOut.toString().contains("zipkin-server")) {
                 println "Starting Zipkin server."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker compose -f $project.projectDir/resources/zipkin-server/docker-compose.yml up -d"
                     standardOutput = stdOut
                 }
@@ -152,13 +160,13 @@ task stopZipkinServer() {
         // in Windows OS.
         if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
             def stdOut = new ByteArrayOutputStream()
-            exec {
+            execHelper.execOperations.exec {
                 commandLine 'sh', '-c', "docker ps --filter name=zipkin-server"
                 standardOutput = stdOut
             }
             if (stdOut.toString().contains("zipkin-server")) {
                 println "Stopping LDAP server."
-                exec {
+                execHelper.execOperations.exec {
                     commandLine 'sh', '-c', "docker stop zipkin-server"
                     standardOutput = stdOut
                 }
