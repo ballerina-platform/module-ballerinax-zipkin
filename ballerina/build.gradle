@@ -17,76 +17,31 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+
+import javax.inject.Inject
+
+abstract class BallerinaExecHelper {
+    @Inject abstract ExecOperations getExecOperations()
+}
+
+plugins {
+    id 'io.ballerina.plugin'
+}
 
 description = 'Ballerina - Zipkin Extension - Ballerina Module'
 
-configurations {
-    nativeJar {
-        transitive false
-    }
-    externalJars {
-        transitive false
-    }
-    distribution {
-        canBeConsumed true
-        canBeResolved false
-    }
-}
-
-dependencies {
-    nativeJar project(':zipkin-extension-native')
-
-    externalJars "io.zipkin.zipkin2:zipkin:${zipkinVersion}"
-    externalJars "io.zipkin.reporter2:zipkin-reporter:${zipkinReporterVersion}"
-    externalJars "io.zipkin.reporter2:zipkin-sender-okhttp3:${zipkinReporterVersion}"
-    externalJars "com.squareup.okio:okio:${okioVersion}"
-    externalJars "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-    externalJars "org.jetbrains.kotlin:kotlin-runtime:${kotlinVersion}"
-    externalJars "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
-    externalJars "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-exporter-common:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-context:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-sdk-trace:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-sdk-common:${openTelemetryVersion}"
-    externalJars "io.opentelemetry.semconv:opentelemetry-semconv:${openTelemetrySemconvVersion}"
-    externalJars "io.opentelemetry:opentelemetry-proto:${openTelemetryProtoVersion}"
-    externalJars "io.opentelemetry:opentelemetry-exporter-otlp:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-exporter-otlp-common:${openTelemetryVersion}"
-    externalJars "io.opentelemetry:opentelemetry-extension-trace-propagators:${openTelemetryVersion}"
-    externalJars "com.google.guava:guava:${guavaVersion}"
-    externalJars "com.google.guava:failureaccess:${failureAccessVersion}"
-}
-
-clean {
-    delete "${project.projectDir}/target"
-    delete "${project.projectDir}/Ballerina.lock"
-    delete "${project.projectDir}/ballerina-internal.log"
-}
-
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name, 'Implementation-Version': project.version)
-    }
-}
-
-task copyExternalJarsToLib(type: Copy) {
-    into "${project.projectDir}/lib"
-    from configurations.externalJars
-}
-
-def packageOrg = "ballerinax"
 def packageName = "zipkin"
-def ballerinaConfigFile = new File("${project.projectDir}/Ballerina.toml")
-def artifactBallerinaDocs = file("${project.projectDir}/build/docs_parent/")
-def artifactCacheParent = file("${project.buildDir}/cache_parent/")
-def artifactLibParent = file("${project.buildDir}/lib_parent/")
-def snapshotVersion = "-SNAPSHOT"
+def packageOrg = "ballerinax"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
-def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
-def originalConfig = ballerinaConfigFile.text
-def artifactJar = file("$project.projectDir/target/cache/${packageOrg}/${packageName}/${tomlVersion}/java17/")
-def platform = "java21"
-def skipTests = false
+def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
+def ballerinaTomlFile = new File("${project.projectDir}/Ballerina.toml")
+// `bal pack` output location used by io.ballerina.plugin's build task.
+def balBuildTarget = "build/bal_build_target"
+// The platform directory (java21, java25, ...) is chosen by the Ballerina
+// distribution in use, so it is matched instead of hardcoded.
+def artifactCacheDir = file("${project.projectDir}/${balBuildTarget}/cache/${packageOrg}/${packageName}/${tomlVersion}")
+def balaDir = file("${project.projectDir}/${balBuildTarget}/bala")
 
 def stripBallerinaExtensionVersion(String extVersion) {
     if (extVersion.matches(project.ext.timestampedVersionRegex)) {
@@ -102,129 +57,116 @@ def stripBallerinaExtensionVersion(String extVersion) {
     }
 }
 
-task updateTomlVersions {
-    doLast {
-        def zipkinVersion = project.zipkinVersion
-        def zipkinReporterVersion = project.zipkinReporterVersion
-        def okioVersion = project.okioVersion
-        def okhttpVersion = project.okhttpVersion
-        def kotlinVersion = project.kotlinVersion
-        def kotlinStdlibVersion = project.kotlinStdlibVersion
-        def openTelemetryVersion = project.openTelemetryVersion
-        def openTelemetryProtoVersion = project.openTelemetryProtoVersion
-        def openTelemetrySemconvVersion = project.openTelemetrySemconvVersion
-        def guavaVersion = project.guavaVersion
-        def failureAccessVersion = project.failureAccessVersion
-
-        def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
-        newConfig = newConfig.replace("@zipkin.version@", zipkinVersion)
-        newConfig = newConfig.replace("@zipkinReporter.version@", zipkinReporterVersion)
-        newConfig = newConfig.replace("@okio.version@", okioVersion)
-        newConfig = newConfig.replace("@okhttp.version@", okhttpVersion)
-        newConfig = newConfig.replace("@kotlin.version@", kotlinVersion)
-        newConfig = newConfig.replace("@kotlinStdlib.version@", kotlinStdlibVersion)
-        newConfig = newConfig.replace("@toml.version@", tomlVersion)
-        newConfig = newConfig.replace("@opentelemetry.version@", openTelemetryVersion)
-        newConfig = newConfig.replace("@opentelemetryProto.version@", openTelemetryProtoVersion)
-        newConfig = newConfig.replace("@opentelemetrySemconv.version@", openTelemetrySemconvVersion)
-        newConfig = newConfig.replace("@guava.version@", guavaVersion)
-        newConfig = newConfig.replace("@failureAccess.version@", failureAccessVersion)
-        ballerinaConfigFile.text = newConfig
-    }
+ballerina {
+    packageOrganization = packageOrg
+    module = packageName
+    langVersion = ballerinaLangVersion
+    platform = 'java25'
 }
 
-task revertTomlFile {
-    doLast {
-        ballerinaConfigFile.text = originalConfig
-    }
-}
-
-task ballerinaBuild {
-    dependsOn updateTomlVersions
-    dependsOn configurations.nativeJar
-    dependsOn configurations.externalJars
-    dependsOn copyExternalJarsToLib
-    dependsOn compileJava
-    dependsOn compileTestJava
-    dependsOn jar
-    dependsOn checkstyleMain
-    dependsOn checkstyleTest
-    dependsOn spotbugsMain
-    dependsOn spotbugsTest
-    dependsOn test
-    dependsOn ":zipkin-extension-ballerina:generatePomFileForMavenJavaPublication"
-
-    inputs.dir file(project.projectDir)
-    if (skipTests) {
-        finalizedBy(revertTomlFile)
-    }
-
-    doLast {
-        def additionalBuildParams = ""
-        if (project.hasProperty("debug")) {
-            additionalBuildParams = "--debug ${project.findProperty("debug")}"
+configurations {
+    externalJars {
+        transitive false
+        // guava (and potentially other externalJars entries) publish Gradle
+        // Module Metadata with multiple usage/JVM-environment variants; a bare
+        // configuration with no attributes can't pick one and fails resolution
+        // with "no matching variant" on a clean cache. Usage alone isn't
+        // enough either - androidRuntimeElements and jreRuntimeElements both
+        // satisfy java-runtime, so TargetJvmEnvironment is needed too to
+        // settle on the standard (non-Android) one.
+        // See https://github.com/ballerina-platform/module-ballerinax-zipkin/pull/212
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, Usage.JAVA_RUNTIME))
+            attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    project.objects.named(TargetJvmEnvironment, TargetJvmEnvironment.STANDARD_JVM))
         }
+    }
+    ballerinaStdLibs
+}
 
-        // build bala file
-        executeBalCommand ("build", "${project.projectDir}")
-        executeBalCommand ("pack", "${project.projectDir}")
+dependencies {
+    // The plugin registers its jbalTools dependency before the ballerina {}
+    // extension is configured (version resolves to `null`); declaring the real
+    // version here wins conflict resolution (same as module-ballerina-grpc).
+    jbalTools("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
+        transitive = false
+    }
 
-        // extract bala file to artifact cache directory
-        file("${project.projectDir}/target/bala").eachFileMatch(~/.*.bala/) { balaFile ->
-            copy {
-                from zipTree(balaFile)
-                into file("$artifactCacheParent/bala/${packageOrg}/${packageName}/${tomlVersion}/${platform}")
+    ballerinaStdLibs "io.ballerina.stdlib:observe-ballerina:${observeVersion}"
+    ballerinaStdLibs "io.ballerina:observe-ballerina:${observeInternalVersion}"
+
+    // NOTE: opentelemetry-api and opentelemetry-context are NOT packed:
+    // ballerina-rt shades both artifacts and its copies always win classloading.
+    // The SDK version must match the API version ballerina-rt shades (1.65.0 for 2201.14.0).
+    // opentelemetry-exporter-zipkin is no longer published after 1.64.0; since 1.63.0 it is
+    // self-contained (no shared SDK internals), so it is used with the newer SDK below.
+    externalJars "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryExporterZipkinVersion}"
+    externalJars "io.opentelemetry:opentelemetry-sdk-trace:${openTelemetryVersion}"
+    externalJars "io.opentelemetry:opentelemetry-sdk-common:${openTelemetryVersion}"
+    externalJars "io.opentelemetry.semconv:opentelemetry-semconv:${openTelemetrySemconvVersion}"
+    externalJars "io.opentelemetry:opentelemetry-extension-trace-propagators:${openTelemetryVersion}"
+    externalJars "io.zipkin.zipkin2:zipkin:${zipkinVersion}"
+    externalJars "io.zipkin.reporter2:zipkin-reporter:${zipkinReporterVersion}"
+    externalJars "io.zipkin.reporter2:zipkin-sender-okhttp3:${zipkinReporterVersion}"
+    externalJars "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    externalJars "com.squareup.okio:okio-jvm:${okioVersion}"
+    externalJars "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
+    externalJars "com.google.guava:guava:${guavaVersion}"
+    externalJars "com.google.guava:failureaccess:${failureAccessVersion}"
+}
+
+// copyToLib is registered by io.ballerina.plugin and copies the externalJars
+// configuration into lib/; drop stale jars left behind by dependency version
+// bumps.
+copyToLib {
+    doFirst {
+        delete fileTree("${project.projectDir}/lib") {
+            include "*.jar"
+        }
+    }
+}
+
+clean {
+    delete "${project.projectDir}/target"
+    delete "${project.projectDir}/Ballerina.lock"
+    delete "${project.projectDir}/ballerina-internal.log"
+}
+
+task updateTomlFiles {
+    doLast {
+        def newConfig = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
+        newConfig = newConfig.replace("@toml.version@", tomlVersion)
+        newConfig = newConfig.replace("@opentelemetry.version@", project.openTelemetryVersion)
+        newConfig = newConfig.replace("@opentelemetryExporterZipkin.version@", project.openTelemetryExporterZipkinVersion)
+        newConfig = newConfig.replace("@opentelemetrySemconv.version@", project.openTelemetrySemconvVersion)
+        newConfig = newConfig.replace("@zipkin.version@", project.zipkinVersion)
+        newConfig = newConfig.replace("@zipkinReporter.version@", project.zipkinReporterVersion)
+        newConfig = newConfig.replace("@okhttp.version@", project.okhttpVersion)
+        newConfig = newConfig.replace("@okio.version@", project.okioVersion)
+        newConfig = newConfig.replace("@kotlinStdlib.version@", project.kotlinStdlibVersion)
+        newConfig = newConfig.replace("@guava.version@", project.guavaVersion)
+        newConfig = newConfig.replace("@failureAccess.version@", project.failureAccessVersion)
+        ballerinaTomlFile.text = newConfig
+    }
+}
+
+task commitTomlFiles {
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
+    doLast {
+        execHelper.execOperations.exec {
+            ignoreExitValue true
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "git commit -m \"[Automated] Update the native jar versions\" Ballerina.toml Dependencies.toml"
+            } else {
+                commandLine 'sh', '-c', "git commit -m '[Automated] Update the native jar versions' Ballerina.toml Dependencies.toml"
             }
         }
-        copy {
-            from file("${project.projectDir}/target/cache")
-            exclude '**/*-testable.jar'
-            exclude '**/tests_cache/'
-            into file("$artifactCacheParent/cache/")
-        }
-
-        // Doc creation and packing
-        executeBalCommand ("doc", "${project.projectDir}")
-
-        copy {
-            from file("$project.projectDir/target/apidocs/${packageName}")
-            into file("$project.buildDir/docs_parent/docs/${packageName}")
-        }
     }
-
-    outputs.dir artifactCacheParent
-    outputs.dir artifactBallerinaDocs
-    outputs.dir artifactLibParent
 }
 
-task createArtifactZip(type: Zip) {
-    destinationDirectory = file("${project.buildDir}/distributions")
-    from ballerinaBuild
-}
-
-artifacts {
-    distribution createArtifactZip
-}
-
-task ballerinaPublish {
-    dependsOn updateTomlVersions
-    dependsOn ballerinaBuild
-    dependsOn ":zipkin-extension-ballerina:generatePomFileForMavenJavaPublication"
-
-    finalizedBy(revertTomlFile)
-
-    doLast {
-        if (project.version.toString().split("-").length > 1) {
-            return
-        }
-        if (ballerinaCentralAccessToken != null) {
-            println("Publishing to the ballerina central...")
-            def env = "JAVA_OPTS -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            executeBalCommand ("push", "${project.projectDir}", env)
-        } else {
-            throw new InvalidUserDataException("Central Access Token is not present")
-        }
-    }
+createArtifactZip {
+    archiveBaseName = project.name
+    archiveVersion = project.version.toString()
 }
 
 publishing {
@@ -246,40 +188,127 @@ publishing {
     }
 }
 
-build {
-    dependsOn ballerinaBuild
-}
-
-publish {
-    dependsOn ballerinaPublish
-}
-
 task extractBallerinaClassFiles(type: Copy) {
-    fileTree(artifactJar).forEach { file ->
-        from zipTree(file).matching {
-            exclude '**/tests/*'
-            include '**/*.class'
+    dependsOn build
+
+    from {
+        fileTree(artifactCacheDir) { include 'java*/*.jar' }.collect { file ->
+            zipTree(file).matching {
+                exclude '**/tests/*'
+                include '**/*.class'
+            }
         }
-        into "${project.rootDir.absolutePath}/build/classes"
     }
+    into "${project.rootDir.absolutePath}/build/classes"
 }
 
+def balDistributionBin = "${project.projectDir}/build/jballerina-tools-${ballerinaLangVersion}/bin"
 task publishBalaFileToLocal {
-    dependsOn ballerinaBuild
-
-    finalizedBy(revertTomlFile)
+    def execHelper = project.objects.newInstance(BallerinaExecHelper)
+    dependsOn build
 
     doLast {
-        if (!skipTests) {
-            exec {
-                workingDir "${project.rootDir}/ballerina"
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine 'cmd', '/c', "bal.bat push --repository=local" +
-                            " && exit %%ERRORLEVEL%%"
-                } else {
-                    commandLine 'sh', '-c', "bal push --repository=local"
-                }
+        // The platform in the bala name (java21, java25, ...) depends on the distribution in use.
+        def balaFileName = fileTree(balaDir) {
+            include "${packageOrg}-${packageName}-*-${tomlVersion}.bala"
+        }.singleFile.name
+        execHelper.execOperations.exec {
+            workingDir project.projectDir
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "${balDistributionBin}/bal.bat push ${balBuildTarget}/bala/${balaFileName} --repository=local && exit %%ERRORLEVEL%%"
+            } else {
+                commandLine 'sh', '-c', "${balDistributionBin}/bal push ${balBuildTarget}/bala/${balaFileName} --repository=local"
             }
         }
     }
 }
+
+if (project.hasProperty('buildUsingDocker')) {
+    def requestedDockerTag = project.findProperty('buildUsingDocker')
+    def dockerTag = (requestedDockerTag == null || requestedDockerTag == '') ? 'nightly' :
+            (requestedDockerTag.toString().matches(project.ext.timestampedVersionRegex) ? 'nightly' :
+                    requestedDockerTag.toString())
+    println("[Info] project builds on docker (patched tag resolution)")
+    println("[Info] using the Ballerina docker image tag: ${dockerTag}")
+
+    def projectDirectory = project.projectDir
+    def parentDirectory = projectDirectory.parentFile
+    // Matches io.ballerina.plugin's own balaArtifact path, so createArtifactZip
+    // (which zips `from project.build`, i.e. this task's outputs) keeps working.
+    def balaUnzipped = file("${project.projectDir}/build/bala_unzipped")
+    def dockerExecHelper = project.objects.newInstance(BallerinaExecHelper)
+
+    // Argument-list execution (no outer/inner shell) so paths containing
+    // spaces can't be mis-split by sh -c/cmd -c word-splitting; -w sets the
+    // container working directory instead of an inner `cd ... &&` shell
+    // fragment. Same pattern ballerina-tests/build.gradle already uses for
+    // its own docker `bal test` invocation. containerEnv lets callers (e.g.
+    // the Central push below) pass extra -e KEY=VALUE pairs without dumping
+    // the whole host environment into the container.
+    def runInBallerinaContainer = { List<String> innerArgs, Map<String, String> containerEnv = [:] ->
+        dockerExecHelper.execOperations.exec {
+            workingDir project.projectDir
+            environment "DOCKER_DEFAULT_PLATFORM", "linux/amd64"
+            def envArgs = containerEnv.collectMany { key, value -> ['-e', "${key}=${value}"] }
+            commandLine(['docker', 'run', '--rm', '--net=host', '-u', 'root',
+                    '-v', "${parentDirectory}:/home/ballerina/${parentDirectory.name}",
+                    '-v', "${projectDirectory}:/home/ballerina/${parentDirectory.name}/${projectDirectory.name}"]
+                    + envArgs +
+                    ['-w', "/home/ballerina/${parentDirectory.name}/${projectDirectory.name}",
+                    "ballerina/ballerina:${dockerTag}"] + innerArgs)
+        }
+    }
+
+    // Same needPublishToCentral guard io.ballerina.plugin's own build task
+    // applies (skip for SNAPSHOT/timestamped versions, require the access
+    // token) - actions.clear() below replaces that task's body entirely, so
+    // without this the Docker path would pack the bala but silently never
+    // push it to Central.
+    def needPublishToCentral = project.hasProperty('publishToCentral') &&
+            project.findProperty('publishToCentral').toString() == 'true'
+    def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
+
+    tasks.named('build') {
+        actions.clear()
+        doLast {
+            runInBallerinaContainer(['bal', 'pack', '--target-dir', balBuildTarget])
+            fileTree("${project.projectDir}/${balBuildTarget}/bala") { include '*.bala' }.each { balaFile ->
+                copy {
+                    from zipTree(balaFile)
+                    into new File("${balaUnzipped}/bala/${packageOrg}/${packageName}/${tomlVersion}/${ballerina.platform}")
+                }
+            }
+            if (needPublishToCentral) {
+                if (project.version.toString().endsWith('-SNAPSHOT') ||
+                        project.version.toString().matches(project.ext.timestampedVersionRegex)) {
+                    println("[Info] skipping publishing to central: project version is SNAPSHOT or Timestamped SNAPSHOT")
+                } else if (ballerinaCentralAccessToken != null) {
+                    println("[Info] Publishing to the ballerina central...")
+                    def balaFileName = fileTree(balaDir) {
+                        include "${packageOrg}-${packageName}-*-${tomlVersion}.bala"
+                    }.singleFile.name
+                    runInBallerinaContainer(['bal', 'push', "${balBuildTarget}/bala/${balaFileName}"],
+                            ['BALLERINA_CENTRAL_ACCESS_TOKEN': ballerinaCentralAccessToken])
+                } else {
+                    throw new InvalidUserDataException('Central Access Token is not present')
+                }
+            }
+        }
+    }
+
+    tasks.named('test') {
+        actions.clear()
+        doLast {
+            runInBallerinaContainer(['bal', 'test'])
+        }
+    }
+}
+
+updateTomlFiles.dependsOn copyStdlibs
+build.dependsOn updateTomlFiles
+test.dependsOn updateTomlFiles
+build.dependsOn ":zipkin-extension-native:build"
+test.dependsOn ":zipkin-extension-native:build"
+build.dependsOn "generatePomFileForMavenJavaPublication"
+publish.dependsOn build
+publishToMavenLocal.dependsOn build

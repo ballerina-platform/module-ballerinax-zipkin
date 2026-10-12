@@ -17,122 +17,99 @@
 [package]
 org = "ballerinax"
 name = "zipkin"
-version = "@toml.version@"
-distribution = "2201.12.0"
+version = "1.1.0"
+distribution = "2201.14.0"
 
-[platform.java21]
+[build-options]
+# Pin dependency resolution to the versions in Dependencies.toml: the build
+# compiles against a distribution assembled by copyStdlibs from the stdlib
+# versions in gradle.properties, so letting bal resolve to the latest on
+# Central would drift out of sync with the merged balas.
+sticky = true
+
+[platform.java25]
 graalvmCompatible = true
 
-[[platform.java21.dependency]]
-path = "../native/build/libs/zipkin-extension-native-@project.version@.jar"
+[[platform.java25.dependency]]
+path = "../native/build/libs/zipkin-extension-native-1.1.0-SNAPSHOT.jar"
 groupId = "ballerina"
 artifactId = "zipkin-extension-native"
-version = "@project.version@"
+version = "1.1.0-SNAPSHOT"
 
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-exporter-zipkin-@opentelemetry.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/opentelemetry-exporter-zipkin-1.64.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-exporter-zipkin"
-version = "@opentelemetry.version@"
+version = "1.64.0"
 
-[[platform.java21.dependency]]
-path = "./lib/zipkin-@zipkin.version@.jar"
-groupId = "io.zipkin.zipkin2"
-artifactId = "zipkin"
-version = "@zipkin.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/zipkin-reporter-@zipkinReporter.version@.jar"
-groupId = "io.zipkin.reporter2"
-artifactId = "zipkin-reporter"
-version = "@zipkinReporter.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/zipkin-sender-okhttp3-@zipkinReporter.version@.jar"
-groupId = "io.zipkin.reporter2"
-artifactId = "zipkin-sender-okhttp3"
-version = "@zipkinReporter.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/okio-jvm-@okio.version@.jar"
-groupId = "com.squareup.okio"
-artifactId = "okio"
-version = "@okio.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/okhttp-@okhttp.version@.jar"
-groupId = "com.squareup.okhttp3"
-artifactId = "okhttp"
-version = "@okhttp.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/kotlin-runtime-@kotlin.version@.jar"
-groupId = "org.jetbrains.kotlin"
-artifactId = "kotlin-runtime"
-version = "@kotlin.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/kotlin-stdlib-@kotlinStdlib.version@.jar"
-groupId = "org.jetbrains.kotlin"
-artifactId = "kotlin-stdlib"
-version = "@kotlinStdlib.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-exporter-common-@opentelemetry.version@.jar"
-groupId = "io.opentelemetry"
-artifactId = "opentelemetry-exporter-common"
-version = "@opentelemetry.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-sdk-trace-@opentelemetry.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/opentelemetry-sdk-trace-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-sdk-trace"
-version = "@opentelemetry.version@"
+version = "1.65.0"
 
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-sdk-common-@opentelemetry.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/opentelemetry-sdk-common-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-sdk-common"
-version = "@opentelemetry.version@"
+version = "1.65.0"
 
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-semconv-@opentelemetrySemconv.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/opentelemetry-semconv-1.43.0.jar"
 groupId = "io.opentelemetry.semconv"
 artifactId = "opentelemetry-semconv"
-version = "@opentelemetrySemconv.version@"
+version = "1.43.0"
 
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-proto-@opentelemetryProto.version@.jar"
-groupId = "io.opentelemetry"
-artifactId = "opentelemetry-proto"
-version = "@opentelemetryProto.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-exporter-otlp-@opentelemetry.version@.jar"
-groupId = "io.opentelemetry"
-artifactId = "opentelemetry-exporter-otlp"
-version = "@opentelemetry.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-exporter-otlp-common-@opentelemetry.version@.jar"
-groupId = "io.opentelemetry"
-artifactId = "opentelemetry-exporter-otlp-common"
-version = "@opentelemetry.version@"
-
-[[platform.java21.dependency]]
-path = "./lib/opentelemetry-extension-trace-propagators-@opentelemetry.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/opentelemetry-extension-trace-propagators-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-extension-trace-propagators"
-version = "@opentelemetry.version@"
+version = "1.65.0"
 
-[[platform.java21.dependency]]
-path = "./lib/guava-@guava.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/zipkin-2.27.1.jar"
+groupId = "io.zipkin.zipkin2"
+artifactId = "zipkin"
+version = "2.27.1"
+
+[[platform.java25.dependency]]
+path = "./lib/zipkin-reporter-3.5.3.jar"
+groupId = "io.zipkin.reporter2"
+artifactId = "zipkin-reporter"
+version = "3.5.3"
+
+[[platform.java25.dependency]]
+path = "./lib/zipkin-sender-okhttp3-3.5.3.jar"
+groupId = "io.zipkin.reporter2"
+artifactId = "zipkin-sender-okhttp3"
+version = "3.5.3"
+
+[[platform.java25.dependency]]
+path = "./lib/okhttp-4.12.0.jar"
+groupId = "com.squareup.okhttp3"
+artifactId = "okhttp"
+version = "4.12.0"
+
+[[platform.java25.dependency]]
+path = "./lib/okio-jvm-3.6.0.jar"
+groupId = "com.squareup.okio"
+artifactId = "okio-jvm"
+version = "3.6.0"
+
+[[platform.java25.dependency]]
+path = "./lib/kotlin-stdlib-1.9.10.jar"
+groupId = "org.jetbrains.kotlin"
+artifactId = "kotlin-stdlib"
+version = "1.9.10"
+
+[[platform.java25.dependency]]
+path = "./lib/guava-32.1.2-jre.jar"
 groupId = "com.google.guava"
 artifactId = "guava"
-version = "@guava.version@"
+version = "32.1.2-jre"
 
-[[platform.java21.dependency]]
-path = "./lib/failureaccess-@failureAccess.version@.jar"
+[[platform.java25.dependency]]
+path = "./lib/failureaccess-1.0.1.jar"
 groupId = "com.google.guava"
 artifactId = "failureaccess"
-version = "@failureAccess.version@"
+version = "1.0.1"
