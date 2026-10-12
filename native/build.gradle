@@ -23,14 +23,6 @@ plugins {
 description = 'Ballerina - Zipkin Extension - Native Module'
 
 dependencies {
-    implementation "io.zipkin.zipkin2:zipkin:${zipkinVersion}"
-    implementation "io.zipkin.reporter2:zipkin-reporter:${zipkinReporterVersion}"
-    implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:${zipkinReporterVersion}"
-    implementation "com.squareup.okio:okio:${okioVersion}"
-    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-    implementation "org.jetbrains.kotlin:kotlin-runtime:${kotlinVersion}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
-    implementation "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryVersion}"
     implementation "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
     implementation "io.opentelemetry:opentelemetry-api:${openTelemetryVersion}"
     implementation "io.opentelemetry:opentelemetry-context:${openTelemetryVersion}"
@@ -38,6 +30,13 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-common:${openTelemetryVersion}"
     implementation "io.opentelemetry.semconv:opentelemetry-semconv:${openTelemetrySemconvVersion}"
     implementation "io.opentelemetry:opentelemetry-extension-trace-propagators:${openTelemetryVersion}"
+    implementation "io.opentelemetry:opentelemetry-exporter-zipkin:${openTelemetryExporterZipkinVersion}"
+    implementation "io.zipkin.zipkin2:zipkin:${zipkinVersion}"
+    implementation "io.zipkin.reporter2:zipkin-reporter:${zipkinReporterVersion}"
+    implementation "io.zipkin.reporter2:zipkin-sender-okhttp3:${zipkinReporterVersion}"
+    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    implementation "com.squareup.okio:okio-jvm:${okioVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinStdlibVersion}"
     implementation("com.google.guava:guava:${guavaVersion}") {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
@@ -83,7 +82,7 @@ publishing {
 
 task copyJavaClassFiles(type: Copy) {
     dependsOn(compileJava)
-    from("${project.buildDir}/classes") {
+    from("${project.buildDir}/classes/java/main") {
         exclude '**/module-info.class'
         include '**/*.class'
     }

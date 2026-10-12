@@ -11,4 +11,4 @@ observabilityIncluded = true
 org="ballerinax"
 name="zipkin"
 repository="local"
-version = "@toml.version@"
+version = "1.1.0"
