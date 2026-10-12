@@ -43,16 +43,16 @@ artifactId = "opentelemetry-exporter-zipkin"
 version = "1.64.0"
 
 [[platform.java25.dependency]]
-path = "./lib/opentelemetry-sdk-trace-1.67.0.jar"
+path = "./lib/opentelemetry-sdk-trace-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-sdk-trace"
-version = "1.67.0"
+version = "1.65.0"
 
 [[platform.java25.dependency]]
-path = "./lib/opentelemetry-sdk-common-1.67.0.jar"
+path = "./lib/opentelemetry-sdk-common-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-sdk-common"
-version = "1.67.0"
+version = "1.65.0"
 
 [[platform.java25.dependency]]
 path = "./lib/opentelemetry-semconv-1.43.0.jar"
@@ -61,10 +61,10 @@ artifactId = "opentelemetry-semconv"
 version = "1.43.0"
 
 [[platform.java25.dependency]]
-path = "./lib/opentelemetry-extension-trace-propagators-1.67.0.jar"
+path = "./lib/opentelemetry-extension-trace-propagators-1.65.0.jar"
 groupId = "io.opentelemetry"
 artifactId = "opentelemetry-extension-trace-propagators"
-version = "1.67.0"
+version = "1.65.0"
 
 [[platform.java25.dependency]]
 path = "./lib/zipkin-2.27.1.jar"
