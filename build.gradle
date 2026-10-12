@@ -146,6 +146,7 @@ if (tasks.names.contains('build')) {
 task codeCoverageReport(type: JacocoReport) {
     dependsOn('zipkin-extension-ballerina:extractBallerinaClassFiles')
     dependsOn('zipkin-extension-native:copyJavaClassFiles')
+    dependsOn(':zipkin-extension-native:jacocoTestReport')
 
     // The unpacked Ballerina distributions live under the searched tree but
     // never contain execution data.

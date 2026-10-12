@@ -18,6 +18,7 @@
 
 plugins {
     id 'java-library'
+    id 'jacoco'
 }
 
 description = 'Ballerina - Zipkin Extension - Native Module'
@@ -41,6 +42,8 @@ dependencies {
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
     implementation("com.google.guava:failureaccess:${failureAccessVersion}")
+
+    testImplementation "org.testng:testng:${testngVersion}"
 }
 
 compileJava {
@@ -49,6 +52,37 @@ compileJava {
                 '--module-path', classpath.asPath,
         ]
         classpath = files()
+    }
+}
+
+test {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+        showStackTraces true
+        showStandardStreams true
+        exceptionFormat "full"
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
+    }
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
     }
 }
 
