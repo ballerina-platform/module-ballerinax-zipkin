@@ -21,10 +21,6 @@ version = "1.1.0"
 distribution = "2201.14.0"
 
 [build-options]
-# Pin dependency resolution to the versions in Dependencies.toml: the build
-# compiles against a distribution assembled by copyStdlibs from the stdlib
-# versions in gradle.properties, so letting bal resolve to the latest on
-# Central would drift out of sync with the merged balas.
 sticky = true
 
 [platform.java25]
